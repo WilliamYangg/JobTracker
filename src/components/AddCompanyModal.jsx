@@ -4,7 +4,7 @@ import { LogoDropzone } from './LogoDropzone'
 export function AddCompanyModal({ onClose, onSave }) {
   const [companyName, setCompanyName] = useState('')
   const [jobTitle, setJobTitle] = useState('')
-  const [type, setType] = useState('grad')
+  const [type, setType] = useState('intern')
   const [status, setStatus] = useState('not yet applied')
   const [logoFile, setLogoFile] = useState(null)
   const [saving, setSaving] = useState(false)

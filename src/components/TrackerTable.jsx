@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 const STATUS_OPTIONS = [
   'not yet applied',
@@ -8,6 +8,18 @@ const STATUS_OPTIONS = [
   'technical int',
   'final round',
   'waiting on offer',
+]
+
+const STATUS_ORDER = Object.fromEntries(STATUS_OPTIONS.map((s, i) => [s, i]))
+
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Recent' },
+  { value: 'name-asc', label: 'Name A–Z' },
+  { value: 'name-desc', label: 'Name Z–A' },
+  { value: 'progress-asc', label: 'Progress (earliest)' },
+  { value: 'progress-desc', label: 'Progress (furthest)' },
+  { value: 'intern-first', label: 'Interns first' },
+  { value: 'grad-first', label: 'Grads first' },
 ]
 
 function statusToClass(status) {
@@ -20,11 +32,39 @@ function formatStatusLabel(s) {
 }
 
 export function TrackerTable({ applications, onRowClick, onStatusChange }) {
-  const sortedApps = useMemo(() => {
-    return [...applications].sort((a, b) =>
-      new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
-    )
-  }, [applications])
+  const [sortBy, setSortBy] = useState('recent')
+  const [filterType, setFilterType] = useState('all')
+
+  const filteredAndSortedApps = useMemo(() => {
+    let list = applications
+
+    if (filterType === 'intern') {
+      list = list.filter((a) => a.type === 'intern')
+    } else if (filterType === 'grad') {
+      list = list.filter((a) => a.type === 'grad')
+    }
+
+    return [...list].sort((a, b) => {
+      switch (sortBy) {
+        case 'name-asc':
+          return (a.company_name || '').localeCompare(b.company_name || '')
+        case 'name-desc':
+          return (b.company_name || '').localeCompare(a.company_name || '')
+        case 'progress-asc':
+          return (STATUS_ORDER[a.status] ?? 0) - (STATUS_ORDER[b.status] ?? 0)
+        case 'progress-desc':
+          return (STATUS_ORDER[b.status] ?? 0) - (STATUS_ORDER[a.status] ?? 0)
+        case 'intern-first':
+          if (a.type === b.type) return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
+          return a.type === 'intern' ? -1 : 1
+        case 'grad-first':
+          if (a.type === b.type) return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
+          return a.type === 'grad' ? -1 : 1
+        default:
+          return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
+      }
+    })
+  }, [applications, sortBy, filterType])
 
   const handleStatusChange = (e, id) => {
     e.stopPropagation()
@@ -32,7 +72,26 @@ export function TrackerTable({ applications, onRowClick, onStatusChange }) {
   }
 
   return (
-    <div className="table-wrapper">
+    <div className="tracker-section">
+      <div className="tracker-toolbar">
+        <div className="tracker-filters">
+          <label htmlFor="filter-type">Filter</label>
+          <select id="filter-type" value={filterType} onChange={(e) => setFilterType(e.target.value)} className="filter-select">
+            <option value="all">All</option>
+            <option value="intern">Intern only</option>
+            <option value="grad">Grad only</option>
+          </select>
+        </div>
+        <div className="tracker-sort">
+          <label htmlFor="sort-by">Sort</label>
+          <select id="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="filter-select">
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="table-wrapper">
       <table className="tracker-table">
         <thead>
           <tr>
@@ -43,7 +102,7 @@ export function TrackerTable({ applications, onRowClick, onStatusChange }) {
           </tr>
         </thead>
         <tbody>
-          {sortedApps.map((app) => (
+          {filteredAndSortedApps.map((app) => (
             <tr
               key={app.id}
               className="tracker-row"
@@ -82,13 +141,14 @@ export function TrackerTable({ applications, onRowClick, onStatusChange }) {
           ))}
         </tbody>
       </table>
-      {sortedApps.length === 0 && (
+      {filteredAndSortedApps.length === 0 && (
         <div className="empty-state">
           <div className="empty-state-icon">📋</div>
           <h3>No applications yet</h3>
           <p>Add your first company to start tracking your job search. You can add logos, notes, and update status as you progress.</p>
         </div>
       )}
+      </div>
     </div>
   )
 }

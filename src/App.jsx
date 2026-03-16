@@ -61,7 +61,10 @@ function App() {
   }, [user])
 
   const handleSignIn = async () => {
-    await supabase.auth.signInWithOAuth({ provider: 'google' })
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/` },
+    })
   }
 
   const handleSignOut = async () => {
@@ -87,14 +90,22 @@ function App() {
       }
     }
 
-    await supabase.from('applications').insert({
-      user_id: user.id,
-      company_name,
-      job_title,
-      type,
-      status,
-      logo_url: logoUrl,
-    })
+    const { data: newApp, error } = await supabase
+      .from('applications')
+      .insert({
+        user_id: user.id,
+        company_name,
+        job_title,
+        type,
+        status,
+        logo_url: logoUrl,
+      })
+      .select()
+      .single()
+
+    if (!error && newApp) {
+      setApplications((prev) => [newApp, ...prev])
+    }
   }
 
   const handleUpdateApplication = async (id, updates) => {
