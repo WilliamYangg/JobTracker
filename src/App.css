@@ -627,6 +627,12 @@
   margin-bottom: 32px;
 }
 
+.company-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .btn-back {
   display: inline-flex;
   align-items: center;
@@ -715,6 +721,78 @@
 
 .company-editor-notes .rich-text-editor .ProseMirror {
   min-height: 240px;
+}
+
+.btn-delete {
+  padding: 10px 22px;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-delete:hover {
+  background: var(--danger-bg);
+}
+
+.delete-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.delete-confirm {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 360px;
+  box-shadow: var(--shadow-lg);
+}
+
+.delete-confirm h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.delete-confirm p {
+  margin: 0 0 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-delete-confirm {
+  padding: 10px 22px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-delete-confirm:hover {
+  opacity: 0.9;
 }
 
 @media (max-width: 768px) {

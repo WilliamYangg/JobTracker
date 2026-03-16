@@ -131,6 +131,12 @@ function App() {
     await handleUpdateApplication(id, { status })
   }
 
+  const handleDeleteApplication = async (id) => {
+    await supabase.from('applications').delete().eq('id', id)
+    setApplications((prev) => prev.filter((a) => a.id !== id))
+    setSelectedApp(null)
+  }
+
   if (!isSupabaseConfigured) {
     return (
       <div className="auth-screen">
@@ -218,6 +224,7 @@ function App() {
             application={selectedApp}
             onBack={() => setSelectedApp(null)}
             onUpdate={handleUpdateApplication}
+            onDelete={handleDeleteApplication}
           />
         ) : (
           <>

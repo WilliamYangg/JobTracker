@@ -16,8 +16,9 @@ function formatStatusLabel(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
 }
 
-export function CompanyEditor({ application, onBack, onUpdate }) {
+export function CompanyEditor({ application, onBack, onUpdate, onDelete }) {
   const [companyName, setCompanyName] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [jobTitle, setJobTitle] = useState('')
   const [type, setType] = useState('grad')
   const [status, setStatus] = useState('not yet applied')
@@ -64,6 +65,12 @@ export function CompanyEditor({ application, onBack, onUpdate }) {
 
   const markChanged = () => setHasChanges(true)
 
+  const handleDelete = async () => {
+    if (!onDelete) return
+    await onDelete(application.id)
+    setShowDeleteConfirm(false)
+  }
+
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') onBack()
   }, [onBack])
@@ -83,6 +90,14 @@ export function CompanyEditor({ application, onBack, onUpdate }) {
           Applications
         </button>
         <div className="company-editor-actions">
+          <button
+            type="button"
+            className="btn-delete"
+            onClick={() => setShowDeleteConfirm(true)}
+            aria-label="Delete company"
+          >
+            Delete
+          </button>
           <button
             type="button"
             className="btn-primary"
@@ -144,6 +159,23 @@ export function CompanyEditor({ application, onBack, onUpdate }) {
             </div>
           </div>
         </div>
+
+        {showDeleteConfirm && (
+          <div className="delete-confirm-overlay">
+            <div className="delete-confirm">
+              <h3>Delete {companyName || 'this company'}?</h3>
+              <p>This cannot be undone.</p>
+              <div className="delete-confirm-actions">
+                <button type="button" className="btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
+                  Cancel
+                </button>
+                <button type="button" className="btn-delete-confirm" onClick={handleDelete}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="company-editor-notes">
           <label>Notes</label>
