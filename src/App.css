@@ -81,6 +81,16 @@
   color: var(--text-primary);
 }
 
+.build-id {
+  position: fixed;
+  bottom: 8px;
+  right: 12px;
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-family: monospace;
+}
+
 .header-actions {
   display: flex;
   align-items: center;

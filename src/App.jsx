@@ -164,6 +164,7 @@ function App() {
   if (!user) {
     return (
       <div className="auth-screen">
+        <div className="build-id" title="Build timestamp">{typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : 'dev'}</div>
         <div className="auth-card">
           <div className="app-logo-icon" style={{ margin: '0 auto 20px' }}>J</div>
           <h1>Job Tracker</h1>
@@ -218,6 +219,8 @@ function App() {
           </button>
         </div>
       </header>
+      {/* Build ID for deployment verification - remove after confirming deploys work */}
+      <div className="build-id" title="Build timestamp">{typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : 'dev'}</div>
       <main className="app-main">
         {selectedApp ? (
           <CompanyEditor
